@@ -12,7 +12,7 @@ public class Route {
     }
 
     public void route(Node node0, Node node1, int value) throws Exception {
-        if(node0.getRoutes().containsKey(node1.getName()))
+        if (node0.getRoutes().containsKey(node1.getName()))
             throw new Exception("Nodes are already connected");
         this.node0 = node0;
         this.node1 = node1;
@@ -58,5 +58,13 @@ public class Route {
 
     public void setValue(int value) {
         this.value = value;
+    }
+
+    public Node getNeighbourNode(Node node) {
+        if (node == node0)
+            return node1;
+        if (node == node1)
+            return node0;
+        return null;
     }
 }
