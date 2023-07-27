@@ -1,86 +1,99 @@
 import java.util.*;
 
 public class DijkstraAlgorithm {
-    public final String NAME = "name", DISTANCE = "distance", PREVIOUS = "previous", VISITED = "visited";
-    private Map<String, Node> nodes;
-    private Map<String, Map<String, Map<String, Object>>> wholeHistory = new HashMap<String, Map<String, Map<String, Object>>>();
+    public final String
+            NAME = "name",
+            DISTANCE = "distance",
+            PREVIOUS = "previous",
+            VISITED = "visited",
+            LENGTH = "length",
+            VALUE = "value";
 
     public DijkstraAlgorithm() {
-        this(null);
     }
 
-    public DijkstraAlgorithm(Map<String, Node> nodes) {
-        this.nodes = nodes;
-    }
-
-    public void calculateAllBestRoutes(){
-        String[] nodeNames = nodes.keySet().toArray(new String[0]);
-        for(int i = 0; i < nodeNames.length; i++){
-            calculateBestRoutes(nodeNames[i]);
+    public Map<String, Map<String, Map<String, Object>>> calculateAllRouteMaps(Map<String, Node> nodes) {
+        if (nodes.isEmpty()) {
+            return null;
         }
+        Map<String, Map<String, Map<String, Object>>> history = new HashMap<String, Map<String, Map<String, Object>>>();
+        String[] nodeNameArray = nodes.keySet().toArray(new String[0]);
+        for (int i = 0; i < nodeNameArray.length; i++) {
+            history.put(nodeNameArray[i], calculateRouteMap(nodeNameArray[i], nodes));
+        }
+        return history;
     }
 
-    public Map<String, Map<String, Object>> calculateBestRoutes(String startNodeName) {
+    public Map<String, Map<String, Object>> calculateRouteMap(String startNodeName, Map<String, Node> nodes) {
         if (nodes == null)
             return null;
-        Map<String, Map<String, Object>> wholeNodeHistory = new HashMap<String, Map<String, Object>>();
-        Map<String, Object> nodeHistory = new HashMap<String, Object>();
-        nodeHistory.put(NAME, startNodeName);
-        nodeHistory.put(DISTANCE, 0);
-        nodeHistory.put(PREVIOUS, null);
-        nodeHistory.put(VISITED, false);
-        wholeNodeHistory.put(startNodeName, nodeHistory);
-        calculate(nodes.get(startNodeName), wholeNodeHistory);
-        wholeHistory.put(startNodeName, wholeNodeHistory);
-        return wholeNodeHistory;
+        Map<String, Map<String, Object>> history = new HashMap<String, Map<String, Object>>();
+        Map<String, Object> tempHistory = new HashMap<String, Object>();
+        tempHistory.put(NAME, startNodeName);
+        tempHistory.put(DISTANCE, 0);
+        tempHistory.put(PREVIOUS, null);
+        tempHistory.put(VISITED, false);
+        history.put(startNodeName, tempHistory);
+        calculate(nodes.get(startNodeName), history);
+        return history;
     }
 
-    public Map<String, Object> calculateBestRoute(String startNodeName, String endNodeName) {
-        Map<String, Object> m = new HashMap<String, Object>();
+    private Map<String, Map<String, Object>> calculate(Node currentNode, Map<String, Map<String, Object>> history) {
+        String[] nextNodeNameArray = currentNode.getRouteNameArray();
+        if (nextNodeNameArray.length <= 0) {
+            return null;
+        }
+        for (int i = 0; i < nextNodeNameArray.length; i++) {
+            Map<String, Object> tempHistory;
+            if (history.containsKey(nextNodeNameArray[i])) {
+                System.out.println(nextNodeNameArray[i]);
+                tempHistory = history.get(nextNodeNameArray[i]);
+                if ((boolean) tempHistory.get(VISITED)) {
+                    continue;
+                }
+                if ((int) history.get(currentNode.getName()).get(DISTANCE) + currentNode.getRoute(nextNodeNameArray[i]).getValue() < (int) tempHistory.get(DISTANCE)) {
+                    tempHistory.put(DISTANCE, (int) history.get(currentNode.getName()).get(DISTANCE) + currentNode.getRoute(nextNodeNameArray[i]).getValue());
+                    tempHistory.put(PREVIOUS, currentNode);
+                }
+            } else {
+                tempHistory = new HashMap<String, Object>();
+                tempHistory.put(NAME, nextNodeNameArray[i]);
+                tempHistory.put(DISTANCE, (int) history.get(currentNode.getName()).get(DISTANCE) + currentNode.getRoute(nextNodeNameArray[i]).getValue());
+                tempHistory.put(PREVIOUS, currentNode);
+                tempHistory.put(VISITED, false);
+            }
+            history.put(nextNodeNameArray[i], tempHistory);
+        }
+        history.get(currentNode.getName()).put(VISITED, true);
+        for (int i = 0; i < nextNodeNameArray.length; i++) {
+            if ((boolean) history.get(nextNodeNameArray[i]).get(VISITED)) {
+                continue;
+            } else {
+                calculate(currentNode.getRoute(nextNodeNameArray[i]).getNeighbourNode(currentNode), history);
+            }
+        }
+        return history;
+    }
+
+
+    /**
+     * @param startNodeName
+     * @param endNodeName
+     * @param history
+     * @return Map<String, Object> Containing key "length", the keys 0 to length-1 for getting the nodes and the total route-value
+     */
+    public Map<Object, Object> calculateOneRoute(String startNodeName, String endNodeName, Map<String, Map<String, Map<String, Object>>> history) {
+        if (history.isEmpty()) {
+            return null;
+        }
+        Map<Object, Object> route = new HashMap<Object, Object>();
+        Map<String, Map<String, Object>> tempHistory = history.get(startNodeName);
+        /*Node currentNode = history.get(endNodeName).get()
+        for (int i = 0; i < ) {
+
+        }*/
         return null;
     }
 
-    private void calculate(Node currentNode, Map<String, Map<String, Object>> wholeNodeHistory) {
-        Map<String, Route> neighbours = currentNode.getRoutes();
-        String[] names = neighbours.keySet().toArray(new String[0]);
-        if (names.length <= 0)
-            return;
-        System.out.println(currentNode.getName());
-        int currentDistance = (int) wholeNodeHistory.get(currentNode.getName()).get(DISTANCE);
-        for (int i = 0; i < names.length; i++) {
-            Route route = neighbours.get(names[i]);
-            Node node = route.getNeighbourNode(currentNode);
-            Map<String, Object> nodeHistory;
-            if (wholeNodeHistory.containsKey(node.getName())) {
-                nodeHistory = wholeNodeHistory.get(node.getName());
-                if ((boolean) nodeHistory.get(VISITED))
-                    continue;
-                if (currentDistance + route.getValue() < (int) nodeHistory.get(DISTANCE)) {
-                    nodeHistory.put(DISTANCE, currentDistance + route.getValue());
-                    nodeHistory.put(PREVIOUS, currentNode);
-                }
-            } else {
-                nodeHistory = new HashMap<String, Object>();
-                nodeHistory.put(NAME, node.getName());
-                nodeHistory.put(DISTANCE, currentDistance + route.getValue());
-                nodeHistory.put(PREVIOUS, currentNode);
-                nodeHistory.put(VISITED, false);
-            }
-            wholeNodeHistory.put(node.getName(), nodeHistory);
-        }
 
-        wholeNodeHistory.get(currentNode.getName()).put(VISITED, true);
-        for (int i = 0; i < names.length; i++) {
-            Route route = neighbours.get(names[i]);
-            Node node = route.getNeighbourNode(currentNode);
-            if ((boolean) wholeNodeHistory.get(node.getName()).get(VISITED))
-                continue;
-            else
-                calculate(node, wholeNodeHistory);
-        }
-    }
-
-    public Map<String, Map<String, Map<String, Object>>> getWholeHistory() {
-        return wholeHistory;
-    }
 }
