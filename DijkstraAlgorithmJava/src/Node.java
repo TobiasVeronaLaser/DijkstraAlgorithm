@@ -40,6 +40,15 @@ public class Node {
         return routes.keySet().toArray(new String[0]);
     }
 
+    public Node[] getRouteNeighbourNodeArray() {
+        String[] routeNameArray = getRouteNameArray();
+        Node[] routeNeighbourNodeArray = new Node[routeNameArray.length];
+        for (int i = 0; i < routeNameArray.length; i++) {
+            routeNeighbourNodeArray[i] = routes.get(routeNameArray[i]).getNeighbourNode(this);
+        }
+        return routeNeighbourNodeArray;
+    }
+
     public void clear() {
         String[] routeNames = getRouteNameArray();
         for (int i = 0; i < routeNames.length; i++) {

@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Playground {
     public static void main(String[] args) throws Exception {
@@ -13,11 +10,18 @@ public class Playground {
         Node node1 = new Node("node1");
         Node node2 = new Node("node2");
         Node node3 = new Node("node3");
-        Map<String, Node> nodes = new HashMap<String, Node>();
+        List<Node> nodeList = new ArrayList<Node>();
+        nodeList.add(node0);
+        nodeList.add(node1);
+        nodeList.add(node2);
+        nodeList.add(node3);
+        /*
+        Map<String, Node> nodeMap = new HashMap<String, Node>();
         nodes.put(node0.getName(), node0);
         nodes.put(node1.getName(), node1);
         nodes.put(node2.getName(), node2);
         nodes.put(node3.getName(), node3);
+         */
         List<Route> routes = new ArrayList<>();
         routes.add(new Route(node0, node1, 1));
         routes.add(new Route(node0, node2, 2));
@@ -25,7 +29,7 @@ public class Playground {
         routes.add(new Route(node1, node3, 10));
         routes.add(new Route(node2, node3, 6));
         DijkstraAlgorithm da = new DijkstraAlgorithm();
-        Map<String, Map<String, Map<String, Object>>> history = da.calculateAllRouteMaps(nodes);
+        Map<Node, Map<Node, Map<String, Object>>> history = da.calculateAllRouteMaps(nodeList);
         System.out.println("Test0");
 
     }
