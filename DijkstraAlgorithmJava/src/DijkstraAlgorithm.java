@@ -76,22 +76,30 @@ public class DijkstraAlgorithm {
 
 
     /**
-     * @param startNodeName
-     * @param endNodeName
+     * @param startNode
+     * @param endNode
      * @param history
      * @return Map<String, Object> Containing key "length", the keys 0 to length-1 for getting the nodes and the total route-value
      */
-    public Map<Object, Object> calculateOneRoute(String startNodeName, String endNodeName, Map<String, Map<String, Map<String, Object>>> history) {
+    public Map<Object, Object> calculateOneRoute(Node startNode, Node endNode, Map<Node, Map<Node, Map<String, Object>>> history) {
         if (history.isEmpty()) {
             return null;
         }
-        Map<Object, Object> route = new HashMap<Object, Object>();
-        Map<String, Map<String, Object>> tempHistory = history.get(startNodeName);
-        /*Node currentNode = history.get(endNodeName).get()
-        for (int i = 0; i < ) {
 
-        }*/
-        return null;
+        Map<Object, Object> route = new HashMap<Object, Object>();
+        Map<Node, Map<String, Object>> tempHistory = history.get(startNode);
+        Node currentNode = (Node) tempHistory.get(endNode).get(CURRENT);
+        route.put(LENGTH, 0);
+        for (int i = 0; ; i++) {
+            route.put(i, currentNode);
+            route.put(LENGTH, 1 + (int) route.get(LENGTH));
+            if (currentNode == tempHistory.get(startNode).get(CURRENT)) {
+                break;
+            }
+            currentNode = (Node) tempHistory.get(currentNode).get(PREVIOUS);
+        }
+        route.put(VALUE, tempHistory.get(endNode).get(DISTANCE));
+        return route;
     }
 
 

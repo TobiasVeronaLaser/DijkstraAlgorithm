@@ -15,13 +15,6 @@ public class Playground {
         nodeList.add(node1);
         nodeList.add(node2);
         nodeList.add(node3);
-        /*
-        Map<String, Node> nodeMap = new HashMap<String, Node>();
-        nodes.put(node0.getName(), node0);
-        nodes.put(node1.getName(), node1);
-        nodes.put(node2.getName(), node2);
-        nodes.put(node3.getName(), node3);
-         */
         List<Route> routes = new ArrayList<>();
         routes.add(new Route(node0, node1, 1));
         routes.add(new Route(node0, node2, 2));
@@ -31,6 +24,7 @@ public class Playground {
         DijkstraAlgorithm da = new DijkstraAlgorithm();
         Map<Node, Map<Node, Map<String, Object>>> history = da.calculateAllRouteMaps(nodeList);
         System.out.println("Test0");
-
+        Map<Object, Object> route = da.calculateOneRoute(node0, node3, history);
+        System.out.println("Test0");
     }
 }
